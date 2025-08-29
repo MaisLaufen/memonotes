@@ -4,5 +4,6 @@ export interface Folder {
     owner: string; // логин пользователя
     createdAt: string;
     color: string;
+    parentId: string | null;
     //important: number; // TODO: сделать через enum
 }

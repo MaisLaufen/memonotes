@@ -62,6 +62,21 @@ class NotesStore {
     return this.userNotes.filter(note => note.folderId === folderId);
   }
 
+  getSubFolders(parentFolderId: string) {
+    if (!userStore.currentUser) return [];
+    return this.folders.filter(folder => 
+      folder.owner === userStore.currentUser?.login && 
+      folder.parentId === parentFolderId
+    );
+  }
+
+  get parentFolders() {
+    if (!userStore.currentUser) return [];
+    return this.folders.filter(
+      folder => folder.owner == userStore.currentUser?.login
+      && folder.parentId == null);
+  }
+
   // ==========================
   // ЗАМЕТКИ
   // ==========================
@@ -103,25 +118,30 @@ class NotesStore {
   // ==========================
 
   
-  async addFolder(name: string, color?: string) {
+  async addFolder(name: string, color?: string, parentId?: string | null) {
     if (!userStore.currentUser) throw new Error('Не авторизован');
+    
     const newFolder: Folder = {
       id: uuid(),
       name,
       color: color || FOLDER_COLORS[Math.floor(Math.random() * FOLDER_COLORS.length)],
       owner: userStore.currentUser.login,
       createdAt: Date.now().toString(),
+      parentId: parentId || null,
     };
     this.folders.push(newFolder);
     await storage.setItem('folders', this.folders);
   }
 
-  async renameFolder(folderId: string, newName: string, newColor?: string) {
+  async renameFolder(folderId: string, newName: string, newColor?: string, newParentId?: string | null) {
     const folder = this.folders.find(f => f.id === folderId);
     if (!folder) return;
     folder.name = newName;
     if (newColor) {
       folder.color = newColor;
+    }
+    if (newParentId !== undefined) {
+      folder.parentId = newParentId;
     }
     await storage.setItem('folders', this.folders);
   }

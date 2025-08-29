@@ -175,7 +175,7 @@ const FoldersScreen = observer(() => {
         </View>
       ) : (
         <FlatList
-          data={notesStore.userFolders}
+          data={notesStore.parentFolders}
           keyExtractor={(item) => item.id}
           renderItem={renderFolderItem}
           contentContainerStyle={styles.listContainer}
