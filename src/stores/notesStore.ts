@@ -80,7 +80,7 @@ class NotesStore {
   // ==========================
   // ЗАМЕТКИ
   // ==========================
-  async addNote(title: string, description: string, folderId?: string) {
+  async addNote(title: string, description: string, folderId: string | null) {
     if (!userStore.currentUser) throw new Error('Не авторизован');
     const newNote: Note = {
       id: uuid(),

@@ -1,77 +1,128 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import { notesStore } from '../../stores/notesStore';
-import { userStore } from '../../stores/userStore';
-import NoteItem from '../../components/Note';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AppStackParamList } from '../../navigation/appStack';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import NoteItem from '../../components/Note';
+import { AppStackParamList } from '../../navigation/appStack';
 import { Note } from '../../types/models/note';
+import { notesStore } from '../../stores/notesStore';
+import AddButton from '../../components/AddButton';
 
 type NotesScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'Main'>;
 
 const NotesScreen = observer(() => {
   const navigation = useNavigation<NotesScreenNavigationProp>();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState('notes');
+  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
 
-  const handleAddNote = async () => {
-    if (!title.trim()) return;
-    await notesStore.addNote(title, description);
-    setTitle('');
-    setDescription('');
+  const handleMenuPress = () => {
+    // Логика меню
   };
 
+  const handleSearch = () => {
+    // Логика поиска
+  };
+
+
   const navigateToEdit = (noteId: string) => {
-    navigation.navigate('EditNote', {noteId: noteId})
+    navigation.navigate('EditNote', { noteId });
   };
 
   const deleteNote = (noteId: string) => {
     notesStore.deleteNote(noteId);
   };
 
-    const getNoteColor = (note: Note) => {
-      if (!note.folderId) return '#393939';
-      const folder = notesStore.folders.find(f => f.id === note.folderId);
-      return folder?.color || '#393939';
-    };
+  const getNoteColor = (note: Note) => {
+    if (!note.folderId) return '#393939';
+    const folder = notesStore.folders.find(f => f.id === note.folderId);
+    return folder?.color || '#393939';
+  };
 
-  const sortedNotes = notesStore.userNotes.slice().sort((a, b) => b.createdAt - a.createdAt);
+  // Фильтрация заметок по поиску и папке
+  const filteredNotes = notesStore.userNotes
+    .filter(note => {
+      const matchesSearch = note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           note.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesFolder = selectedFolder ? note.folderId === selectedFolder : true;
+      return matchesSearch && matchesFolder;
+    })
+    .sort((a, b) => b.createdAt - a.createdAt);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Мои заметки</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Название"
-        value={title}
-        onChangeText={setTitle}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Описание"
-        value={description}
-        onChangeText={setDescription}
-      />
-      <Button title="Добавить" onPress={handleAddNote} />
-
+      {/* Список заметок */}
       <FlatList
-        data={sortedNotes}
+        data={filteredNotes}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <NoteItem note={item} color={getNoteColor(item)} onEdit= {() => {navigateToEdit(item.id)}} onDelete={() => deleteNote(item.id)} />}
+        renderItem={({ item }) => (
+          <NoteItem 
+            note={item} 
+            color={getNoteColor(item)} 
+            onEdit={() => navigateToEdit(item.id)} 
+            onDelete={() => deleteNote(item.id)} 
+          />
+        )}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Заметок пока нет</Text>
+            <Text style={styles.emptySubtext}>Создайте первую заметку</Text>
+          </View>
+        }
+        contentContainerStyle={filteredNotes.length === 0 ? styles.emptyContainerCenter : null}
       />
-
-      <Button title="Выйти" color="orange" onPress={() => userStore.logout()} />
+      <AddButton onPress={() => navigation.navigate('CreateNote')} title='Добавить записку'/>
     </View>
   );
 });
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-  header: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
-  input: { borderWidth: 1, padding: 10, marginBottom: 10, borderRadius: 5, backgroundColor: '#f9f9f9' },
+  container: {
+    flex: 1,
+    backgroundColor: '#121212',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 50,
+  },
+  emptyContainerCenter: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  emptyText: {
+    fontSize: 18,
+    color: '#fff',
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#888',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 32,
+    right: 32,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#8A2BE2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  fabText: {
+    fontSize: 24,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
 });
 
 export default NotesScreen;

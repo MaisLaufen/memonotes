@@ -5,6 +5,7 @@ import MainScreen from '../screens/notes/MainScreen';
 import EditNoteScreen from '../screens/notes/EditNoteScreen';
 import FolderDetailScreen from '../screens/notes/FolderDetailScreen';
 import CreateFolderScreen from '../screens/notes/CreateFolder';
+import CreateNoteScreen from '../screens/notes/CreateNote';
 
 export type AppStackParamList = {
     Main: undefined;
@@ -14,6 +15,7 @@ export type AppStackParamList = {
       folderName: string,
       folderColor: string};
     CreateFolder: undefined;
+    CreateNote: undefined;
     Home: undefined;
 };
 
@@ -25,6 +27,7 @@ export default function AppStack() {
         <Stack.Screen name="Main" component={MainScreen} options={{title: 'Заметки', headerShown: false}} />
         <Stack.Screen name="EditNote" component={EditNoteScreen} options={{title: 'Изменение заметки', headerShown: false}}/>
         <Stack.Screen name="CreateFolder" component={CreateFolderScreen} options={{title: 'Создание папки', headerShown: false}}/>
+        <Stack.Screen name="CreateNote" component={CreateNoteScreen} options={{title: 'Создание заметки', headerShown: false}}/>
         <Stack.Screen name="FolderDetail" component={FolderDetailScreen} options={{title: 'В папке', headerShown: false}}/>
         <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Главный экран' }} />
     </Stack.Navigator>

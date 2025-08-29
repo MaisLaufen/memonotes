@@ -1,21 +1,18 @@
-import React, { useCallback, useState } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import React, { useCallback } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { notesStore } from '../../stores/notesStore';
 import { Folder } from '../../types/models/folder';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/appStack';
-import ColorPicker from '../../components/ColorPicker';
 import FolderItem from '../../components/FolderItem';
 import { useFolderEdit } from '../../hooks/useFolderEdit';
-import { FOLDER_COLORS } from '../../theme/folder_colors';
+import AddButton from '../../components/AddButton';
 
 type FoldersScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'Main'>;
 
 const FoldersScreen = observer(() => {
-  const [folderName, setFolderName] = useState('');
-  const [selectedColor, setSelectedColor] = useState(FOLDER_COLORS[0]);
   const navigation = useNavigation<FoldersScreenNavigationProp>();
   
   const {
@@ -72,9 +69,7 @@ const FoldersScreen = observer(() => {
   ), [editingFolderId, editName, editColor, handleSaveEdit, cancelEdit, startEdit, handleDeleteFolder]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Мои папки</Text>
-      
+    <View style={styles.container}>      
       <View style={styles.foldersContainer}>
         {notesStore.parentFolders.map((folder) => (
           <View key={folder.id}>
@@ -82,14 +77,7 @@ const FoldersScreen = observer(() => {
           </View>
         ))}
       </View>
-
-      <TouchableOpacity 
-        style={styles.addFolderButton}
-        onPress={() => navigation.navigate('CreateFolder')}
-      >
-        <Text style={styles.addFolderButtonText}>+</Text>
-        <Text style={styles.addFolderButtonText}>Добавить папку</Text>
-      </TouchableOpacity>
+      <AddButton onPress={() => navigation.navigate('CreateFolder')} title='Добавить папку'/>
     </View>
   );
 });
@@ -112,29 +100,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 8,
-  },
-  addFolderButton: {
-    position: 'absolute',
-    bottom: 32,
-    left: '50%',
-    transform: [{ translateX: -75 }],
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    backgroundColor: '#FFA500',
-    borderRadius: 24,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  addFolderButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
-  },
+  }
 });
 export default FoldersScreen;

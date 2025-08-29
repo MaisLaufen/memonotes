@@ -3,53 +3,28 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-nativ
 import { observer } from "mobx-react-lite";
 import NotesListScreen from './NotesScreen'
 import FoldersScreen from "./FoldersScreen";
+import MainAppBar from "../../components/MainAppBar";
+import MainSearchBar from "../../components/MainSearchBar";
+import MainTabBar from "../../components/MainTabBar";
 
 const MainScreen = observer(() => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"notes" | "folders">("notes");
+  const [activeTab, setActiveTab] = useState('notes');
+  const tabs = [
+    {key: 'notes', label: 'Заметки'},
+    {key: 'folders', label: 'Папки'}
+  ]
 
   return (
     <View style={styles.container}>
-    <View style={{height: 30}}/>
-
-      {/* Поиск */}
-      <TextInput
-        style={styles.input}
-        placeholder="Поиск заметок..."
+    <View style={{height: 15}}/>
+    <MainAppBar/>
+    <MainSearchBar
         value={searchQuery}
         onChangeText={setSearchQuery}
-      />
-
-      {/* Нижний таббар */}
-      <View style={styles.tabBar}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "notes" && styles.activeTab]}
-          onPress={() => setActiveTab("notes")}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              activeTab === "notes" && styles.activeTabText,
-            ]}
-          >
-            Все заметки
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "folders" && styles.activeTab]}
-          onPress={() => setActiveTab("folders")}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              activeTab === "folders" && styles.activeTabText,
-            ]}
-          >
-            Папки
-          </Text>
-        </TouchableOpacity>
-      </View>
+        onSearch={() => console.log('search')}
+    />
+      <MainTabBar tabs={tabs} activeTab={activeTab} onTabPress={setActiveTab}/>
 
       {/* Контент вкладок */}
       <View style={styles.content}>
@@ -69,6 +44,7 @@ const MainScreen = observer(() => {
           <Text style={styles.logoutText}>Выйти</Text>
         </TouchableOpacity>
       </View> */}
+      <View style={{height: 20}}/>
     </View>
   );
 });
