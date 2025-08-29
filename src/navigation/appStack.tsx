@@ -13,7 +13,7 @@ const Stack = createNativeStackNavigator<AppStackParamList>();
 export default function AppStack() {
   return (
     <Stack.Navigator>
-        <Stack.Screen name="Main" component={MainScreen} options={{title: 'Заметки'}} />
+        <Stack.Screen name="Main" component={MainScreen} options={{title: 'Заметки', headerShown: false}} />
         <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Главный экран' }} />
     </Stack.Navigator>
   );
