@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import storage from '../services/storage.service';
-import { User } from '../interfaces/user';
+import { User } from '../types/models/user';
 
 class UserStore {
   currentUser: User | null = null;
