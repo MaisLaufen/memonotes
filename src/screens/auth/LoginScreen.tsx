@@ -9,7 +9,6 @@ import AlertModal from '../../modals/AlertModal';
 import MemoInput from '../../components/MemoInput';
 import MemoButton from '../../components/MemoButton';
 import HrefText from '../../components/HrefText';
-import HeaderLogo from '../../components/Header';
 
 type LoginNavProp = StackNavigationProp<AuthStackParamList, 'Login'>;
 
@@ -52,9 +51,6 @@ const LoginScreen = observer(() => {
 
 return (
   <View style={styles.screen}>
-    <View style={styles.header}>
-      <HeaderLogo/>
-    </View>
 
     <View style={styles.container}>
       <Text style={styles.title}>Вход</Text>

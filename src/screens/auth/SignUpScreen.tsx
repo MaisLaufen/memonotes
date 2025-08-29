@@ -9,7 +9,6 @@ import MemoInput from '../../components/MemoInput';
 import MemoButton from '../../components/MemoButton';
 import HrefText from '../../components/HrefText';
 import AlertModal from '../../modals/AlertModal';
-import HeaderLogo from '../../components/Header';
 
 type SignUpNavProp = StackNavigationProp<AuthStackParamList, 'SignUp'>;
 
@@ -48,9 +47,6 @@ const SignUpScreen = observer(() => {
 
   return (
     <View style={styles.screen}>
-    <View style={styles.header}>
-      <HeaderLogo/>
-    </View>
     <View style={styles.container}>
       <Text style={styles.title}>Регистрация</Text>
 
