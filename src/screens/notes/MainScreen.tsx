@@ -10,6 +10,7 @@ const MainScreen = observer(() => {
 
   return (
     <View style={styles.container}>
+    <View style={{height: 30}}/>
 
       {/* Поиск */}
       <TextInput
@@ -73,20 +74,21 @@ const MainScreen = observer(() => {
 });
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 5, backgroundColor: "#fff" },
+  container: { flex: 1, padding: 5, backgroundColor: "#0f0f0f" },
   header: { fontSize: 20, fontWeight: "bold", marginBottom: 10 },
   input: {
     borderWidth: 1,
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,
-    borderColor: "#ccc",
+    backgroundColor: 'white',
+    color: 'red'
   },
   content: { flex: 1 },
   tabBar: {
     flexDirection: "row",
     borderTopWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "transparent",
     height: 50,
   },
   tab: {
