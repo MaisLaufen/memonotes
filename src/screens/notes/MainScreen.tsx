@@ -3,16 +3,13 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-nativ
 import { observer } from "mobx-react-lite";
 import NotesListScreen from './NotesScreen'
 import FoldersScreen from "./FoldersScreen";
-import { userStore } from '../../stores/userStore'
 
-const NotesScreen = observer(() => {
+const MainScreen = observer(() => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"notes" | "folders">("notes");
 
   return (
     <View style={styles.container}>
-      {/* Заголовок */}
-      <Text style={styles.header}>Мои заметки</Text>
 
       {/* Поиск */}
       <TextInput
@@ -76,7 +73,7 @@ const NotesScreen = observer(() => {
 });
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  container: { flex: 1, padding: 5, backgroundColor: "#fff" },
   header: { fontSize: 20, fontWeight: "bold", marginBottom: 10 },
   input: {
     borderWidth: 1,
@@ -122,4 +119,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NotesScreen;
+export default MainScreen;

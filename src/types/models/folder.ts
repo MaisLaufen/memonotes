@@ -3,6 +3,6 @@ export interface Folder {
     name: string;
     owner: string; // логин пользователя
     createdAt: string;
-    //color: string;
+    color: string;
     //important: number; // TODO: сделать через enum
 }

@@ -6,6 +6,19 @@ import { userStore } from './userStore';
 import { v4 as uuid } from 'uuid';
 import { Folder } from '../types/models/folder';
 
+const FOLDER_COLORS = [
+  '#FF6B6B', // красный
+  '#4ECDC4', // бирюзовый
+  '#45B7D1', // синий
+  '#96CEB4', // зеленый
+  '#FFEAA7', // желтый
+  '#DDA0DD', // фиолетовый
+  '#98D8C8', // мятный
+  '#F7DC6F', // золотой
+  '#BB8FCE', // лиловый
+  '#85C1E9', // голубой
+];
+
 class NotesStore {
   notes: Note[] = [];
   folders: Folder[] = [];
@@ -88,11 +101,14 @@ class NotesStore {
   // ==========================
   // ПАПКИ
   // ==========================
-  async addFolder(name: string) {
+
+  
+  async addFolder(name: string, color?: string) {
     if (!userStore.currentUser) throw new Error('Не авторизован');
     const newFolder: Folder = {
       id: uuid(),
       name,
+      color: color || FOLDER_COLORS[Math.floor(Math.random() * FOLDER_COLORS.length)],
       owner: userStore.currentUser.login,
       createdAt: Date.now().toString(),
     };
@@ -100,10 +116,13 @@ class NotesStore {
     await storage.setItem('folders', this.folders);
   }
 
-  async renameFolder(folderId: string, newName: string) {
+  async renameFolder(folderId: string, newName: string, newColor?: string) {
     const folder = this.folders.find(f => f.id === folderId);
     if (!folder) return;
     folder.name = newName;
+    if (newColor) {
+      folder.color = newColor;
+    }
     await storage.setItem('folders', this.folders);
   }
 
