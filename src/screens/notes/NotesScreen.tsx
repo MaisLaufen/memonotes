@@ -14,7 +14,6 @@ type NotesScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'M
 const NotesScreen = observer(() => {
   const navigation = useNavigation<NotesScreenNavigationProp>();
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('notes');
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
 
   const handleMenuPress = () => {

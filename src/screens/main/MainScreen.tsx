@@ -1,18 +1,20 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { observer } from "mobx-react-lite";
-import NotesListScreen from './NotesScreen'
-import FoldersScreen from "./FoldersScreen";
+import NotesListScreen from '../notes/NotesScreen'
+import FoldersScreen from "../folders/FoldersScreen";
 import MainAppBar from "../../components/MainAppBar";
 import MainSearchBar from "../../components/MainSearchBar";
 import MainTabBar from "../../components/MainTabBar";
+import SummariesScreen from "../summaries/SummariesScreen";
 
 const MainScreen = observer(() => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState('notes');
   const tabs = [
     {key: 'notes', label: 'Заметки'},
-    {key: 'folders', label: 'Папки'}
+    {key: 'folders', label: 'Папки'},
+    {key: 'summaries', label: 'Коспекты'}
   ]
 
   return (
@@ -28,11 +30,9 @@ const MainScreen = observer(() => {
 
       {/* Контент вкладок */}
       <View style={styles.content}>
-        {activeTab === "notes" ? (
-          <NotesListScreen/>
-        ) : (
-          <FoldersScreen />
-        )}
+        { activeTab === "notes" && <NotesListScreen/> }
+        { activeTab === "folders" && <FoldersScreen/> }
+        { activeTab === "summaries" && <SummariesScreen/> } 
       </View>
 
       {/* Кнопка выхода */}

@@ -62,7 +62,8 @@ const FoldersScreen = observer(() => {
         navigation.navigate('FolderDetail', {
           folderId: item.id,
           folderName: item.name,
-          folderColor: item.color || '#ff0000'
+          folderColor: item.color || '#ff0000',
+          parentFolderId: null
         });
       }}
     />
