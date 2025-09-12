@@ -8,7 +8,7 @@ import { AuthStackParamList } from '../../navigation/AuthStack';
 import MemoInput from '../../components/MemoInput';
 import MemoButton from '../../components/MemoButton';
 import HrefText from '../../components/HrefText';
-import AlertModal from '../../modals/AlertModal';
+import AlertModal from '../../components/modals/AlertModal';
 
 type SignUpNavProp = StackNavigationProp<AuthStackParamList, 'SignUp'>;
 
