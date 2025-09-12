@@ -12,8 +12,9 @@ type EditSummaryScreenNavigationProp = NativeStackNavigationProp<AppStackParamLi
 const EditSummaryScreen = () => {
   const navigation = useNavigation<EditSummaryScreenNavigationProp>();
   const route = useRoute();
-  const { summaryId } = route.params as {
-    summaryId: string
+  const { summaryId, folderId } = route.params as {
+    summaryId: string;
+    folderId: string;
   } || {};
   
   const [title, setTitle] = useState('');
@@ -58,7 +59,7 @@ const EditSummaryScreen = () => {
         Alert.alert('Успех', 'Конспект успешно обновлен');
       } else {
         // Создание нового конспекта
-        await summariesStore.addSummary(title.trim(), content, null);
+        await summariesStore.addSummary(title.trim(), content, folderId);
         Alert.alert('Успех', 'Конспект успешно создан');
       }
       
