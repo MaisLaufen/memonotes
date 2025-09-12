@@ -1,37 +1,25 @@
-import React, { useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { Folder } from '../../types/models/folder';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/appStack';
-import FolderItem from '../../components/FolderItem';
+import FolderItem from '../../components/Folder';
 import { useFolderEdit } from '../../hooks/useFolderEdit';
 import AddButton from '../../components/AddButton';
 import { folderStore } from '../../stores/foldersStore';
+import AddFolderForm from '../../components/forms/AddFolderForm';
 
 type FoldersScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'Main'>;
 
 const FoldersScreen = observer(() => {
   const navigation = useNavigation<FoldersScreenNavigationProp>();
-  
-  const {
-    editingFolderId,
-    editName,
-    editColor,
-    startEdit,
-    cancelEdit,
-    setEditName,
-    setEditColor
-  } = useFolderEdit();
+  const [showAddFolderForm, setShowAddFolderForm] = useState(false);
+  const [formKey, setFormKey] = useState(0);
+  const [formFolderData, setFormFolderData] = useState<{id: string, name: string, color: string} | null>(null);
 
-  const handleSaveEdit = useCallback(async () => {
-    if (!editingFolderId || !editName.trim()) return;
-    await folderStore.renameFolder(editingFolderId, editName.trim(), editColor);
-    cancelEdit();
-  }, [editingFolderId, editName, editColor]);
-
-  const handleDeleteFolder = useCallback((folderId: string) => {
+  const handleDeleteFolder = (folderId: string) => {
     Alert.alert(
       'Удаление папки',
       'Вы уверены, что хотите удалить эту папку? Все заметки из этой папки будут перемещены в "Все заметки".',
@@ -44,19 +32,43 @@ const FoldersScreen = observer(() => {
         }
       ]
     );
-  }, []);
+  };
 
-  const renderFolderItem = useCallback(({ item }: { item: Folder }) => (
+  const handleEditFolder = (folder: any) => {
+    setShowAddFolderForm(false);
+    setFormFolderData({
+      id: folder.id,
+      name: folder.name,
+      color: folder.color
+    });
+    setTimeout(() => {
+      setFormKey(prev => prev + 1);
+      setShowAddFolderForm(true);
+    }, 0);
+  };
+
+  const handleShowAddForm = () => {
+    setShowAddFolderForm(false);
+    setFormFolderData(null);
+    setTimeout(() => {
+      setFormKey(prev => prev + 1);
+      setShowAddFolderForm(true);
+    }, 0);
+  };
+
+  const handleCloseForm = () => {
+    setShowAddFolderForm(false);
+    setFormFolderData(null);
+  };
+
+  const handleAddFolderSuccess = () => {
+    setFormFolderData(null);
+  };
+
+  const renderFolderItem = ({ item }: { item: any }) => (
     <FolderItem
       folder={item}
-      isEditing={editingFolderId === item.id}
-      editName={editName}
-      editColor={editColor}
-      onEditNameChange={setEditName}
-      onEditColorChange={setEditColor}
-      onSave={handleSaveEdit}
-      onCancel={cancelEdit}
-      onEditPress={() => startEdit(item)}
+      onEditPress={() => handleEditFolder(item)}
       onDeletePress={() => handleDeleteFolder(item.id)}
       onPress={() => {
         navigation.navigate('FolderDetail', {
@@ -65,20 +77,32 @@ const FoldersScreen = observer(() => {
           folderColor: item.color || '#ff0000',
           parentFolderId: null
         });
-      }}
-    />
-  ), [editingFolderId, editName, editColor, handleSaveEdit, cancelEdit, startEdit, handleDeleteFolder]);
+      } }/>
+  );
 
   return (
-    <View style={styles.container}>      
-      <View style={styles.foldersContainer}>
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.foldersContainer}>
         {folderStore.parentFolders.map((folder) => (
-          <View key={folder.id}>
+          <View key={folder.id} style={styles.folderItemWrapper}>
             {renderFolderItem({ item: folder })}
           </View>
         ))}
-      </View>
-      <AddButton onPress={() => navigation.navigate('CreateFolder')} title='Добавить папку'/>
+      </ScrollView>
+      
+      <AddButton onPress={handleShowAddForm} title='Добавить папку'/>
+
+      {showAddFolderForm && (
+        <AddFolderForm
+          key={formKey}
+          isVisible={showAddFolderForm}
+          onClose={handleCloseForm}
+          onAddSuccess={handleAddFolderSuccess}
+          folderId={formFolderData?.id}
+          initialName={formFolderData?.name || ''}
+          initialColor={formFolderData?.color || ''}
+        />
+      )}
     </View>
   );
 });
@@ -86,21 +110,17 @@ const FoldersScreen = observer(() => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
-    padding: 16,
-  },
-  header: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#fff',
-    textAlign: 'center',
-    marginBottom: 16,
+    backgroundColor: 'transparent',
   },
   foldersContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: 8,
-  }
+    padding: 16,
+  },
+  folderItemWrapper: {
+    width: 175,
+  },
 });
+
 export default FoldersScreen;

@@ -8,6 +8,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/appStack';
 import { summariesStore } from '../../stores/summariesStore';
 import { folderStore } from '../../stores/foldersStore';
+import AddNoteForm from '../../components/forms/AddNoteForm';
+import AddFolderForm from '../../components/forms/AddFolderForm';
 
 type FolderDetailScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'FolderDetail'>;
 
@@ -28,19 +30,10 @@ const FolderDetailScreen = observer(() => {
   // Состояния форм
   const [showAddNoteForm, setShowAddNoteForm] = useState(false);
   const [showAddFolderForm, setShowAddFolderForm] = useState(false);
-  
-  // Состояния для заметок
-  const [noteTitle, setNoteTitle] = useState('');
-  const [noteDescription, setNoteDescription] = useState('');
-  
-  // Состояния для папок
-  const [newFolderName, setNewFolderName] = useState('');
-  const [newFolderColor, setNewFolderColor] = useState(folderStore.getFolderColors()[0]);
 
   // Навигация назад с учетом иерархии
   const handleGoBack = () => {
     if (parentFolderId) {
-      // Если есть родительская папка, переходим к ней
       const parentFolder = folderStore.getFolderById(parentFolderId);
       if (parentFolder) {
         navigation.navigate('FolderDetail', {
@@ -53,42 +46,7 @@ const FolderDetailScreen = observer(() => {
         navigation.goBack();
       }
     } else {
-      // Если это корневая папка, возвращаемся назад
       navigation.goBack();
-    }
-  };
-
-  // Добавление заметки
-  const handleAddNote = async () => {
-    if (!noteTitle.trim()) {
-      Alert.alert('Ошибка', 'Введите название заметки');
-      return;
-    }
-    
-    try {
-      await notesStore.addNote(noteTitle.trim(), noteDescription, folderId);
-      setNoteTitle('');
-      setNoteDescription('');
-      setShowAddNoteForm(false);
-    } catch (error) {
-      Alert.alert('Ошибка', 'Не удалось добавить заметку');
-    }
-  };
-
-  // Добавление подпапки
-  const handleAddSubFolder = async () => {
-    if (!newFolderName.trim()) {
-      Alert.alert('Ошибка', 'Введите название папки');
-      return;
-    }
-    
-    try {
-      await folderStore.addFolder(newFolderName.trim(), newFolderColor, folderId);
-      setNewFolderName('');
-      setNewFolderColor(folderStore.getFolderColors()[0]);
-      setShowAddFolderForm(false);
-    } catch (error) {
-      Alert.alert('Ошибка', 'Не удалось создать папку');
     }
   };
 
@@ -149,99 +107,6 @@ const FolderDetailScreen = observer(() => {
     });
   };
 
-  // Компонент формы добавления
-  const renderAddForm = (type: 'note' | 'folder') => {
-    switch (type) {
-      case 'note':
-        return (
-          <View style={styles.addForm}>
-            <TextInput
-              style={styles.formInput}
-              placeholder="Название заметки"
-              value={noteTitle}
-              onChangeText={setNoteTitle}
-              autoFocus
-            />
-            <TextInput
-              style={[styles.formInput, styles.formTextarea]}
-              placeholder="Описание (необязательно)"
-              value={noteDescription}
-              onChangeText={setNoteDescription}
-              multiline
-            />
-            <View style={styles.formActions}>
-              <TouchableOpacity 
-                style={styles.formCancelButton}
-                onPress={() => {
-                  setShowAddNoteForm(false);
-                  setNoteTitle('');
-                  setNoteDescription('');
-                }}
-              >
-                <Text style={styles.formCancelButtonText}>Отмена</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.formSaveButton, !noteTitle.trim() && styles.formSaveButtonDisabled]}
-                onPress={handleAddNote}
-                disabled={!noteTitle.trim()}
-              >
-                <Text style={styles.formSaveButtonText}>Добавить</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        );
-      
-      case 'folder':
-        return (
-          <View style={styles.addForm}>
-            <TextInput
-              style={styles.formInput}
-              placeholder="Название папки"
-              value={newFolderName}
-              onChangeText={setNewFolderName}
-              autoFocus
-            />
-            <Text style={styles.colorLabel}>Цвет папки:</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.colorPicker}>
-              {folderStore.getFolderColors().map((color) => (
-                <TouchableOpacity
-                  key={color}
-                  style={[
-                    styles.colorOption,
-                    { backgroundColor: color },
-                    newFolderColor === color && styles.selectedColor
-                  ]}
-                  onPress={() => setNewFolderColor(color)}
-                />
-              ))}
-            </ScrollView>
-            <View style={styles.formActions}>
-              <TouchableOpacity 
-                style={styles.formCancelButton}
-                onPress={() => {
-                  setShowAddFolderForm(false);
-                  setNewFolderName('');
-                  setNewFolderColor(folderStore.getFolderColors()[0]);
-                }}
-              >
-                <Text style={styles.formCancelButtonText}>Отмена</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.formSaveButton, !newFolderName.trim() && styles.formSaveButtonDisabled]}
-                onPress={handleAddSubFolder}
-                disabled={!newFolderName.trim()}
-              >
-                <Text style={styles.formSaveButtonText}>Создать</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        );
-      
-      default:
-        return null;
-    }
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -263,21 +128,15 @@ const FolderDetailScreen = observer(() => {
       {/* Кнопки добавления */}
       <View style={styles.actionButtonsContainer}>
         <TouchableOpacity 
-          style={[styles.actionButton, showAddNoteForm && styles.activeActionButton]}
-          onPress={() => {
-            setShowAddNoteForm(!showAddNoteForm);
-            if (showAddFolderForm) setShowAddFolderForm(false);
-          }}
+          style={styles.actionButton}
+          onPress={() => setShowAddNoteForm(true)}
         >
           <Text style={styles.actionButtonText}>📝</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={[styles.actionButton, showAddFolderForm && styles.activeActionButton]}
-          onPress={() => {
-            setShowAddFolderForm(!showAddFolderForm);
-            if (showAddNoteForm) setShowAddNoteForm(false);
-          }}
+          style={styles.actionButton}
+          onPress={() => setShowAddFolderForm(true)}
         >
           <Text style={styles.actionButtonText}>📁</Text>
         </TouchableOpacity>
@@ -294,10 +153,6 @@ const FolderDetailScreen = observer(() => {
           <Text style={styles.actionButtonText}>📚</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Формы */}
-      {showAddNoteForm && renderAddForm('note')}
-      {showAddFolderForm && renderAddForm('folder')}
 
       <ScrollView style={styles.content}>
         {/* Подпапки */}
@@ -374,13 +229,26 @@ const FolderDetailScreen = observer(() => {
         )}
 
         {/* Пустое состояние */}
-        {subFolders.length === 0 && folderNotes.length === 0 && folderSummaries.length === 0 && !showAddNoteForm && !showAddFolderForm && (
+        {subFolders.length === 0 && folderNotes.length === 0 && folderSummaries.length === 0 && (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>Папка пуста</Text>
             <Text style={styles.emptySubtext}>Добавьте заметки, конспекты или подпапки</Text>
           </View>
         )}
       </ScrollView>
+
+      {/* Модальные формы */}
+      <AddNoteForm
+        folderId={folderId}
+        isVisible={showAddNoteForm}
+        onClose={() => setShowAddNoteForm(false)}
+      />
+
+      <AddFolderForm
+        folderId={folderId}
+        isVisible={showAddFolderForm}
+        onClose={() => setShowAddFolderForm(false)}
+      />
     </SafeAreaView>
   );
 });
