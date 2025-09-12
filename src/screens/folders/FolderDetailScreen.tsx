@@ -6,11 +6,8 @@ import { notesStore } from '../../stores/notesStore';
 import NoteItem from '../../components/Note';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/appStack';
-import { Folder } from '../../types/models/folder';
-import { FOLDER_COLORS } from '../../theme/folder_colors';
-import { Note } from '../../types/models/note';
-import { Summary } from '../../types/models/summary';
-import { summariesStore } from '../../stores/summaryStore';
+import { summariesStore } from '../../stores/summariesStore';
+import { folderStore } from '../../stores/foldersStore';
 
 type FolderDetailScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'FolderDetail'>;
 
@@ -24,14 +21,13 @@ const FolderDetailScreen = observer(() => {
     parentFolderId?: string;
   };
 
-  const subFolders = notesStore.getSubFolders(folderId);
+  const subFolders = folderStore.getSubFolders(folderId);
   const folderNotes = notesStore.getNotesByFolder(folderId);
   const folderSummaries = summariesStore.getSummariesByFolder(folderId);
 
   // Состояния форм
   const [showAddNoteForm, setShowAddNoteForm] = useState(false);
   const [showAddFolderForm, setShowAddFolderForm] = useState(false);
-  const [showAddSummaryForm, setShowAddSummaryForm] = useState(false);
   
   // Состояния для заметок
   const [noteTitle, setNoteTitle] = useState('');
@@ -39,19 +35,19 @@ const FolderDetailScreen = observer(() => {
   
   // Состояния для папок
   const [newFolderName, setNewFolderName] = useState('');
-  const [newFolderColor, setNewFolderColor] = useState(FOLDER_COLORS[0]);
+  const [newFolderColor, setNewFolderColor] = useState(folderStore.getFolderColors()[0]);
 
   // Навигация назад с учетом иерархии
   const handleGoBack = () => {
     if (parentFolderId) {
       // Если есть родительская папка, переходим к ней
-      const parentFolder = notesStore.folders.find(f => f.id === parentFolderId);
+      const parentFolder = folderStore.getFolderById(parentFolderId);
       if (parentFolder) {
         navigation.navigate('FolderDetail', {
           folderId: parentFolder.id,
           folderName: parentFolder.name,
           folderColor: parentFolder.color || '#ff0000',
-          parentFolderId: parentFolder.parentId
+          parentFolderId: parentFolder.parentId || null
         });
       } else {
         navigation.goBack();
@@ -74,7 +70,6 @@ const FolderDetailScreen = observer(() => {
       setNoteTitle('');
       setNoteDescription('');
       setShowAddNoteForm(false);
-      setShowAddSummaryForm(false);
     } catch (error) {
       Alert.alert('Ошибка', 'Не удалось добавить заметку');
     }
@@ -88,9 +83,9 @@ const FolderDetailScreen = observer(() => {
     }
     
     try {
-      await notesStore.addFolder(newFolderName.trim(), newFolderColor, folderId);
+      await folderStore.addFolder(newFolderName.trim(), newFolderColor, folderId);
       setNewFolderName('');
-      setNewFolderColor(FOLDER_COLORS[0]);
+      setNewFolderColor(folderStore.getFolderColors()[0]);
       setShowAddFolderForm(false);
     } catch (error) {
       Alert.alert('Ошибка', 'Не удалось создать папку');
@@ -145,7 +140,7 @@ const FolderDetailScreen = observer(() => {
   };
 
   // Переход в подпапку
-  const handleNavigateToFolder = (folder: Folder) => {
+  const handleNavigateToFolder = (folder: any) => {
     navigation.navigate('FolderDetail', {
       folderId: folder.id,
       folderName: folder.name,
@@ -154,23 +149,8 @@ const FolderDetailScreen = observer(() => {
     });
   };
 
-  // Компонент подпапки
-  const renderFolderItem = ({ item }: { item: Folder }) => (
-    <TouchableOpacity 
-      style={styles.folderCard}
-      onPress={() => handleNavigateToFolder(item)}
-    >
-      <View style={[styles.folderColorBar, { backgroundColor: item.color || '#ff0000' }]} />
-      <View style={styles.folderCardContent}>
-        <Text style={styles.folderName} numberOfLines={2}>
-          {item.name}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
-
   // Компонент формы добавления
-  const renderAddForm = (type: 'note' | 'folder' | 'summary') => {
+  const renderAddForm = (type: 'note' | 'folder') => {
     switch (type) {
       case 'note':
         return (
@@ -223,7 +203,7 @@ const FolderDetailScreen = observer(() => {
             />
             <Text style={styles.colorLabel}>Цвет папки:</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.colorPicker}>
-              {FOLDER_COLORS.map((color) => (
+              {folderStore.getFolderColors().map((color) => (
                 <TouchableOpacity
                   key={color}
                   style={[
@@ -241,7 +221,7 @@ const FolderDetailScreen = observer(() => {
                 onPress={() => {
                   setShowAddFolderForm(false);
                   setNewFolderName('');
-                  setNewFolderColor(FOLDER_COLORS[0]);
+                  setNewFolderColor(folderStore.getFolderColors()[0]);
                 }}
               >
                 <Text style={styles.formCancelButtonText}>Отмена</Text>
@@ -287,7 +267,6 @@ const FolderDetailScreen = observer(() => {
           onPress={() => {
             setShowAddNoteForm(!showAddNoteForm);
             if (showAddFolderForm) setShowAddFolderForm(false);
-            if (showAddSummaryForm) setShowAddSummaryForm(false);
           }}
         >
           <Text style={styles.actionButtonText}>📝</Text>
@@ -298,14 +277,13 @@ const FolderDetailScreen = observer(() => {
           onPress={() => {
             setShowAddFolderForm(!showAddFolderForm);
             if (showAddNoteForm) setShowAddNoteForm(false);
-            if (showAddSummaryForm) setShowAddSummaryForm(false);
           }}
         >
           <Text style={styles.actionButtonText}>📁</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={[styles.actionButton, showAddSummaryForm && styles.activeActionButton]}
+          style={styles.actionButton}
           onPress={() => {
             navigation.navigate('EditSummary', {
               summaryId: undefined,
@@ -350,7 +328,7 @@ const FolderDetailScreen = observer(() => {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Конспекты</Text>
             <View style={styles.itemsContainer}>
-              {folderSummaries.map((summary: Summary) => (
+              {folderSummaries.map((summary: any) => (
                 <View key={summary.id} style={styles.itemWrapper}>
                   <TouchableOpacity 
                     style={styles.summaryItem}
@@ -381,7 +359,7 @@ const FolderDetailScreen = observer(() => {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Заметки</Text>
             <View style={styles.itemsContainer}>
-              {folderNotes.map((note: Note) => (
+              {folderNotes.map((note: any) => (
                 <View key={note.id} style={styles.itemWrapper}>
                   <NoteItem 
                     note={note} 

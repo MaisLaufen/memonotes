@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import { notesStore } from '../../stores/notesStore';
 import { Folder } from '../../types/models/folder';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -9,6 +8,7 @@ import { AppStackParamList } from '../../navigation/appStack';
 import FolderItem from '../../components/FolderItem';
 import { useFolderEdit } from '../../hooks/useFolderEdit';
 import AddButton from '../../components/AddButton';
+import { folderStore } from '../../stores/foldersStore';
 
 type FoldersScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'Main'>;
 
@@ -27,7 +27,7 @@ const FoldersScreen = observer(() => {
 
   const handleSaveEdit = useCallback(async () => {
     if (!editingFolderId || !editName.trim()) return;
-    await notesStore.renameFolder(editingFolderId, editName.trim(), editColor);
+    await folderStore.renameFolder(editingFolderId, editName.trim(), editColor);
     cancelEdit();
   }, [editingFolderId, editName, editColor]);
 
@@ -40,7 +40,7 @@ const FoldersScreen = observer(() => {
         { 
           text: 'Удалить', 
           style: 'destructive',
-          onPress: () => notesStore.deleteFolder(folderId)
+          onPress: () => folderStore.deleteFolder(folderId)
         }
       ]
     );
@@ -72,7 +72,7 @@ const FoldersScreen = observer(() => {
   return (
     <View style={styles.container}>      
       <View style={styles.foldersContainer}>
-        {notesStore.parentFolders.map((folder) => (
+        {folderStore.parentFolders.map((folder) => (
           <View key={folder.id}>
             {renderFolderItem({ item: folder })}
           </View>

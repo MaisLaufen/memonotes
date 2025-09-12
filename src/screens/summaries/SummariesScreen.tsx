@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/appStack';
 import { Summary } from '../../types/models/summary';
-import { summariesStore } from '../../stores/summaryStore';
+import { summariesStore } from '../../stores/summariesStore';
 import AddButton from '../../components/AddButton';
 
 type SummariesScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'Main'>;

@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { FOLDER_COLORS } from "../../theme/folder_colors";
-import { notesStore } from "../../stores/notesStore";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AppStackParamList } from "../../navigation/appStack";
 import ColorPicker from "../../components/ColorPicker";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaFrameContext } from "react-native-safe-area-context";
+import { folderStore } from "../../stores/foldersStore";
 
 type FoldersScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'Main'>;
 
@@ -19,7 +19,7 @@ const CreateFolderScreen = () => {
 
   const handleSubmit = () => {
     // Сохранение через store
-    notesStore.addFolder(name, color);
+    folderStore.addFolder(name, color);
     navigation.goBack();
   };
 

@@ -5,7 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/appStack';
 import Preview from './markdown/MarkdownPreview';
 import MarkdownEditor from './markdown/MarkdownEditor';
-import { summariesStore } from '../../stores/summaryStore';
+import { summariesStore } from '../../stores/summariesStore';
 
 type EditSummaryScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'EditSummary'>;
 

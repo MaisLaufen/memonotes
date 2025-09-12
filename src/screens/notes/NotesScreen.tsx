@@ -8,6 +8,7 @@ import { AppStackParamList } from '../../navigation/appStack';
 import { Note } from '../../types/models/note';
 import { notesStore } from '../../stores/notesStore';
 import AddButton from '../../components/AddButton';
+import { folderStore } from '../../stores/foldersStore';
 
 type NotesScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'Main'>;
 
@@ -35,7 +36,7 @@ const NotesScreen = observer(() => {
 
   const getNoteColor = (note: Note) => {
     if (!note.folderId) return '#393939';
-    const folder = notesStore.folders.find(f => f.id === note.folderId);
+    const folder = folderStore.folders.find(f => f.id === note.folderId);
     return folder?.color || '#393939';
   };
 
