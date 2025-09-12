@@ -1,45 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, FlatList, StyleSheet, Text, Alert } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import NoteItem from '../../components/Note';
-import { AppStackParamList } from '../../navigation/appStack';
 import { notesStore } from '../../stores/notesStore';
 import AddButton from '../../components/AddButton';
 import { folderStore } from '../../stores/foldersStore';
 import AddNoteForm from '../../components/forms/AddNoteForm';
 
-type NotesScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'Main'>;
-
 const NotesScreen = observer(() => {
-  const navigation = useNavigation<NotesScreenNavigationProp>();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [showAddNoteForm, setShowAddNoteForm] = useState(false);
   const [formKey, setFormKey] = useState(0); // Ключ для принудительного пересоздания формы
   const [formNoteData, setFormNoteData] = useState<{id: string, title: string, description: string} | null>(null);
 
-  const handleMenuPress = () => {
-    // Логика меню
-  };
-
-  const handleSearch = () => {
-    // Логика поиска
-  };
-
   const navigateToEdit = (noteId: string) => {
     const note = notesStore.notes.find(n => n.id === noteId);
     if (note) {
-      // Скрываем форму
       setShowAddNoteForm(false);
-      // Устанавливаем новые данные
       setFormNoteData({
         id: note.id,
         title: note.title,
         description: note.description
       });
-      // Принудительно пересоздаем форму с новым ключом
       setTimeout(() => {
         setFormKey(prev => prev + 1);
         setShowAddNoteForm(true);
@@ -47,10 +28,10 @@ const NotesScreen = observer(() => {
     }
   };
 
-  const deleteNote = (noteId: string) => {
+  const deleteNote = (noteId: string, noteName: string) => {
     Alert.alert(
       'Удаление заметки',
-      'Вы уверены, что хотите удалить эту заметку?',
+      `Вы уверены, что хотите удалить заметку '${noteName}'?` ,
       [
         { text: 'Отмена', style: 'cancel' },
         { 
@@ -68,15 +49,7 @@ const NotesScreen = observer(() => {
     return folder?.color || '#393939';
   };
 
-  // Фильтрация заметок по поиску и папке
-  const filteredNotes = notesStore.userNotes
-    .filter(note => {
-      const matchesSearch = note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           note.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFolder = selectedFolder ? note.folderId === selectedFolder : true;
-      return matchesSearch && matchesFolder;
-    })
-    .sort((a: any, b: any) => b.createdAt - a.createdAt);
+  const notes = notesStore.userNotes;
 
   const handleAddNoteSuccess = () => {
     setFormNoteData(null);
@@ -103,14 +76,14 @@ const NotesScreen = observer(() => {
     <View style={styles.container}>
       {/* Список заметок */}
       <FlatList
-        data={filteredNotes}
+        data={notes}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <NoteItem 
             note={item} 
             color={getNoteColor(item)} 
             onEdit={() => navigateToEdit(item.id)} 
-            onDelete={() => deleteNote(item.id)} 
+            onDelete={() => deleteNote(item.id, item.title)} 
           />
         )}
         ListEmptyComponent={
@@ -119,7 +92,7 @@ const NotesScreen = observer(() => {
             <Text style={styles.emptySubtext}>Создайте первую заметку</Text>
           </View>
         }
-        contentContainerStyle={filteredNotes.length === 0 ? styles.emptyContainerCenter : null}
+        contentContainerStyle={notes.length === 0 ? styles.emptyContainerCenter : null}
       />
 
       {/* Кнопка добавления заметки */}

@@ -1,12 +1,10 @@
-import React, { useCallback, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Alert, ScrollView } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import { Folder } from '../../types/models/folder';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/appStack';
 import FolderItem from '../../components/Folder';
-import { useFolderEdit } from '../../hooks/useFolderEdit';
 import AddButton from '../../components/AddButton';
 import { folderStore } from '../../stores/foldersStore';
 import AddFolderForm from '../../components/forms/AddFolderForm';
@@ -19,10 +17,10 @@ const FoldersScreen = observer(() => {
   const [formKey, setFormKey] = useState(0);
   const [formFolderData, setFormFolderData] = useState<{id: string, name: string, color: string} | null>(null);
 
-  const handleDeleteFolder = (folderId: string) => {
+  const handleDeleteFolder = (folderId: string, folderName: string) => {
     Alert.alert(
       'Удаление папки',
-      'Вы уверены, что хотите удалить эту папку? Все заметки из этой папки будут перемещены в "Все заметки".',
+      `Вы уверены, что хотите удалить папку ${folderName}? Все заметки из этой папки будут перемещены в "Все заметки".`,
       [
         { text: 'Отмена', style: 'cancel' },
         { 
@@ -69,7 +67,7 @@ const FoldersScreen = observer(() => {
     <FolderItem
       folder={item}
       onEditPress={() => handleEditFolder(item)}
-      onDeletePress={() => handleDeleteFolder(item.id)}
+      onDeletePress={() => handleDeleteFolder(item.id, item.title)}
       onPress={() => {
         navigation.navigate('FolderDetail', {
           folderId: item.id,

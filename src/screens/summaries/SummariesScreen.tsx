@@ -7,48 +7,9 @@ import { AppStackParamList } from '../../navigation/appStack';
 import { Summary } from '../../types/models/summary';
 import { summariesStore } from '../../stores/summariesStore';
 import AddButton from '../../components/AddButton';
+import SummaryItem from '../../components/Summary';
 
 type SummariesScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'Main'>;
-
-// Компонент элемента конспекта
-const SummaryItem = observer(({ 
-  summary, 
-  onEdit, 
-  onDelete 
-}: { 
-  summary: Summary; 
-  onEdit: () => void; 
-  onDelete: () => void; 
-}) => {
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString('ru-RU', {
-      day: '2-digit',
-      month: '2-digit',
-      year: '2-digit'
-    });
-  };
-
-  return (
-    <View style={styles.summaryItem}>
-      <TouchableOpacity style={styles.summaryContent} onPress={onEdit}>
-        <Text style={styles.summaryTitle} numberOfLines={2}>
-          {summary.title || 'Без названия'}
-        </Text>
-        <Text style={styles.summaryPreview} numberOfLines={3}>
-          {summary.content.replace(/[#*`]/g, '').substring(0, 100)}
-          {summary.content.length > 100 ? '...' : ''}
-        </Text>
-        <Text style={styles.summaryDate}>
-          {formatDate(summary.updatedAt)}
-        </Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
-        <Text style={styles.deleteButtonText}>×</Text>
-      </TouchableOpacity>
-    </View>
-  );
-});
 
 const SummariesScreen = observer(() => {
   const navigation = useNavigation<SummariesScreenNavigationProp>();
@@ -105,7 +66,7 @@ const SummariesScreen = observer(() => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: 'transparent',
   },
   searchContainer: {
     padding: 16,

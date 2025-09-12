@@ -2,28 +2,8 @@ import { makeAutoObservable } from 'mobx';
 import storage from '../services/storage.service';
 import { userStore } from './userStore';
 import { v4 as uuid } from 'uuid';
-
-export interface Folder {
-  id: string;
-  name: string;
-  color: string;
-  owner: string;
-  createdAt: string;
-  parentId: string | null;
-}
-
-const FOLDER_COLORS = [
-  '#FF6B6B', // красный
-  '#4ECDC4', // бирюзовый
-  '#45B7D1', // синий
-  '#96CEB4', // зеленый
-  '#FFEAA7', // желтый
-  '#DDA0DD', // фиолетовый
-  '#98D8C8', // мятный
-  '#F7DC6F', // золотой
-  '#BB8FCE', // лиловый
-  '#85C1E9', // голубой
-];
+import { Folder } from '../types/models/folder';
+import { FOLDER_COLORS } from '../theme/folder_colors';
 
 class FolderStore {
   folders: Folder[] = [];
@@ -36,17 +16,11 @@ class FolderStore {
     this.isLoading = false;
   }
 
-  // ==========================
-  // ЗАГРУЗКА
-  // ==========================
   async loadFolders() {
     const savedFolders = (await storage.getItem<Folder[]>('folders')) || [];
     this.folders = savedFolders;
   }
 
-  // ==========================
-  // ГЕТТЕРЫ
-  // ==========================
   get userFolders() {
     if (!userStore.currentUser) return [];
     return this.folders.filter(folder => folder.owner === userStore.currentUser?.login);
@@ -72,9 +46,6 @@ class FolderStore {
     return this.folders.find(folder => folder.id === folderId);
   }
 
-  // ==========================
-  // ПАПКИ
-  // ==========================
   async addFolder(name: string, color?: string, parentId?: string | null) {
     if (!userStore.currentUser) throw new Error('Не авторизован');
     
@@ -116,9 +87,6 @@ class FolderStore {
     await storage.setItem('folders', this.folders);
   }
 
-  // ==========================
-  // УТИЛИТЫ
-  // ==========================
   getRandomColor(): string {
     return FOLDER_COLORS[Math.floor(Math.random() * FOLDER_COLORS.length)];
   }
