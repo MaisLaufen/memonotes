@@ -1,16 +1,18 @@
-import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { observer } from 'mobx-react-lite';
-import { Note } from '../types/models/note';
+import React, { useState } from 'react';
+import { View, TouchableOpacity, Text, StyleSheet, Modal } from 'react-native';
+import { folderStore } from '../stores/foldersStore';
+import NoteItemMenu from './modals/context-menu/NoteItemMenu';
 
 interface NoteItemProps {
-  note: Note;
+  note: any;
   color: string;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-const NoteItem = observer(({ note, color, onEdit, onDelete }: NoteItemProps) => {
+const NoteItem = ({ note, color, onEdit, onDelete }: NoteItemProps) => {
+  const [showMenu, setShowMenu] = useState(false);
+
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
     return date.toLocaleDateString('ru-RU', {
@@ -20,37 +22,76 @@ const NoteItem = observer(({ note, color, onEdit, onDelete }: NoteItemProps) => 
     });
   };
 
+  const getFolderPath = () => {
+    if (!note.folderId) return '';
+    
+    const path: string[] = [];
+    let currentFolderId = note.folderId;
+    
+    // Собираем путь от текущей папки к корню
+    while (currentFolderId) {
+      const folder = folderStore.folders.find(f => f.id === currentFolderId);
+      if (!folder) break;
+      
+      path.unshift(folder.name); // Добавляем в начало массива
+      currentFolderId = folder.parentId;
+    }
+    
+    return path.join(' / ');
+  };
+
+  const handleMenuPress = (e: any) => {
+    e.stopPropagation();
+    setShowMenu(true);
+  };
+
+  const handleCloseMenu = () => {
+    setShowMenu(false);
+  };
+
+  const folderPath = getFolderPath();
+
   return (
-    <TouchableOpacity style={styles.container} onPress={onEdit}>
+    <View style={styles.container}>
       <View style={[styles.colorIndicator, { backgroundColor: color }]} />
       <View style={styles.content}>
-        <Text style={styles.title} numberOfLines={2}>
-          {note.title}
-        </Text>
-        <Text style={styles.description} numberOfLines={3}>
-          {note.description}
-        </Text>
+        <Text style={styles.title}>{note.title}</Text>
+        <Text style={styles.description}>{note.description}</Text>
+        
         <View style={styles.footer}>
+          {folderPath ? (
+            <View style={styles.folderPathContainer}>
+              <View style={[styles.folderPathColor, { backgroundColor: color }]} />
+              <Text style={styles.folderPath} numberOfLines={1}>
+                {folderPath}
+              </Text>
+            </View>
+          ) : (
+            <View />
+          )}
+          
           <Text style={styles.date}>{formatDate(note.createdAt)}</Text>
-          <View style={styles.actions}>
-            <TouchableOpacity onPress={(e) => {
-              e.stopPropagation();
-              onEdit();
-            }} style={styles.actionButton}>
-              <Text style={styles.editIcon}>✏️</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={(e) => {
-              e.stopPropagation();
-              onDelete();
-            }} style={styles.actionButton}>
-              <Text style={styles.deleteIcon}>🗑️</Text>
-            </TouchableOpacity>
-          </View>
         </View>
       </View>
-    </TouchableOpacity>
+      
+      {/* Кнопка меню */}
+      <TouchableOpacity 
+        style={styles.menuButton}
+        onPress={handleMenuPress}
+      >
+        <Text style={styles.menuButtonText}>⋯</Text>
+      </TouchableOpacity>
+
+      {/* Модальное меню */}
+      <NoteItemMenu
+        visible={showMenu}
+        onClose={handleCloseMenu}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    </View>
   );
-});
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -59,6 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 12,
     padding: 16,
+    position: 'relative',
   },
   colorIndicator: {
     width: 4,
@@ -72,12 +114,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#fff',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   description: {
     fontSize: 14,
     color: '#aaa',
-    marginBottom: 8,
+    marginBottom: 12,
     lineHeight: 20,
   },
   footer: {
@@ -85,22 +127,44 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  folderPathContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginRight: 8,
+  },
+  folderPathColor: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 6,
+  },
+  folderPath: {
+    fontSize: 11,
+    color: '#888',
+    flex: 1,
+  },
   date: {
     fontSize: 12,
     color: '#888',
+    textAlign: 'right',
   },
-  actions: {
-    flexDirection: 'row',
-    gap: 8,
+  menuButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
   },
-  actionButton: {
-    padding: 4,
-  },
-  editIcon: {
-    fontSize: 16,
-  },
-  deleteIcon: {
-    fontSize: 16,
+  menuButtonText: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 

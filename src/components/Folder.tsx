@@ -1,9 +1,8 @@
-import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Folder } from "../types/models/folder";
 import React, { useState } from "react";
-import { observer } from "mobx-react-lite";
-import ColorPicker from "./ColorPicker";
 import { notesStore } from "../stores/notesStore";
+import FolderItemMenu from "./modals/context-menu/FolderItemMenu";
 
 interface FolderItemProps {
   folder: Folder;
@@ -20,16 +19,21 @@ const FolderItem: React.FC<FolderItemProps> = ({
 }) => {
   const [showMenu, setShowMenu] = useState(false);
 
-  const handleMenuPress = () => {
+  const handleMenuPress = (e: any) => {
+    e.stopPropagation();
     setShowMenu(true);
   };
 
-  const handleEditPress = () => {
+  const handleCloseMenu = () => {
+    setShowMenu(false);
+  };
+
+  const onEdit = () => {
     setShowMenu(false);
     onEditPress();
   };
 
-  const handleDeletePress = () => {
+  const onDelete = () => {
     setShowMenu(false);
     onDeletePress();
   };
@@ -57,32 +61,12 @@ const FolderItem: React.FC<FolderItemProps> = ({
       </TouchableOpacity>
 
       {/* Модальное меню */}
-      <Modal
+      <FolderItemMenu
         visible={showMenu}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setShowMenu(false)}
-      >
-        <TouchableOpacity 
-          style={styles.modalOverlay}
-          onPress={() => setShowMenu(false)}
-        >
-          <View style={[styles.menuContainer, { backgroundColor: 'white' }]}>
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={handleEditPress}
-            >
-              <Text style={styles.menuItemText}>✏️ Редактировать</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={handleDeletePress}
-            >
-              <Text style={styles.menuItemText}>🗑️ Удалить</Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </Modal>
+        onClose={handleCloseMenu}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
     </View>
   );
 };
@@ -133,35 +117,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'white',
     fontWeight: 'bold',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  menuContainer: {
-    position: 'absolute',
-    top: 60,
-    right: 20,
-    backgroundColor: 'white',
-    borderRadius: 8,
-    padding: 8,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    minWidth: 180,
-  },
-  menuItem: {
-    padding: 12,
-    borderRadius: 4,
-  },
-  menuItemText: {
-    fontSize: 16,
-    color: '#333',
-  },
+  }
 });
 
 export default FolderItem;
