@@ -122,12 +122,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',
+    padding: 16,
   },
   foldersContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    padding: 16,
   },
   folderItemWrapper: {
     width: 175,

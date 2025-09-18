@@ -45,7 +45,7 @@ const MainScreen = observer(() => {
           <Text style={styles.logoutText}>Выйти</Text>
         </TouchableOpacity>
       </View> */}
-      <View style={{height: 20}}/>
+      {/* <View style={{height: 20}}/> */}
     </View>
   );
 });
