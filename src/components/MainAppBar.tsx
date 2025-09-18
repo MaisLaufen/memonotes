@@ -8,7 +8,7 @@ interface CustomAppBarProps {
 const MainAppBar = ({ onMenuPress }: CustomAppBarProps) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>memonotes</Text>
+      <Text style={styles.title}>memonotes (Notra)</Text>
       <TouchableOpacity onPress={onMenuPress} style={styles.menuButton}>
         <Text style={styles.menuIcon}>⋮</Text>
       </TouchableOpacity>
@@ -21,19 +21,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    backgroundColor: '#0f0f0f',
+    paddingHorizontal: 16,
+    paddingTop: 5,
+    backgroundColor: 'transparent',
   },
   title: {
     fontSize: 30,
-    fontWeight: '700', // Тонкий, но читаемый
+    fontWeight: '700',
     color: '#fff',
     fontFamily: 'SFProDisplay-Regular', // Если установлен SF Pro
-    // Или просто используйте системный шрифт
   },
   menuButton: {
-    padding: 8,
+    //padding: 8,
   },
   menuIcon: {
     fontSize: 24,

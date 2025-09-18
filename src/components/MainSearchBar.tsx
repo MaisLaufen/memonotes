@@ -14,61 +14,69 @@ const MainSearchBar = ({
   onSearch,
   placeholder = "Поиск заметок..." 
 }: MainSearchBarProps) => {
+
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder={placeholder}
-        placeholderTextColor="#888"
-        value={value}
-        onChangeText={onChangeText}
-        onSubmitEditing={onSearch}
-      />
-      <TouchableOpacity 
-        style={styles.searchButton} 
-        onPress={onSearch}
-      >
-        <Text style={styles.searchIcon}>🔍</Text>
-      </TouchableOpacity>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder={placeholder}
+          placeholderTextColor="#aaa"
+          value={value}
+          onChangeText={onChangeText}
+          onSubmitEditing={onSearch}
+          selectionColor="#7100db"
+        />
+        <TouchableOpacity 
+          style={styles.searchButton} 
+          onPress={onSearch}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.searchIcon}>🔍</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+   margin: 16
+  },
+  searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    margin: 8,
-    position: 'relative',
+    backgroundColor: '#2d2d2d',
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: '#404040',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   input: {
     flex: 1,
-    backgroundColor: '#1e1e1e',
     color: '#fff',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 25,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#333',
+    fontFamily: 'System',
   },
   searchButton: {
-    position: 'absolute',
-    right: 8,
-    backgroundColor: '#8A2BE2', // Фиолетовый цвет
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    backgroundColor: '#7100db',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
   },
   searchIcon: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#fff',
   },
 });

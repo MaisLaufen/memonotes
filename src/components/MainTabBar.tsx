@@ -39,7 +39,7 @@ const MainTabBar = ({ tabs, activeTab, onTabPress }: MainTabBarProps) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: '#121212',
+    backgroundColor: 'transparent',
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
