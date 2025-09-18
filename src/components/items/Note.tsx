@@ -47,7 +47,7 @@ const NoteItem = ({ note, color, onEdit, onDelete }: NoteItemProps) => {
       <View style={styles.footer}>
         {folderPath ? (
           <View style={styles.folderPathContainer}>
-            <Text style={styles.folderPath} numberOfLines={1}>
+            <Text style={[styles.folderPath, {color: color}]} numberOfLines={1}>
               {folderPath}
             </Text>
           </View>
