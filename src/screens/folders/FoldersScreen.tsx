@@ -9,12 +9,14 @@ import AddButton from '../../components/AddButton';
 import { folderStore } from '../../stores/foldersStore';
 import AddFolderForm from '../../components/forms/folder/CreateFolderForm';
 import CreateFolderForm from '../../components/forms/folder/CreateFolderForm';
+import EditFolderForm from '../../components/forms/folder/EditFolderForm';
 
 type FoldersScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'Main'>;
 
 const FoldersScreen = observer(() => {
   const navigation = useNavigation<FoldersScreenNavigationProp>();
   const [showAddFolderForm, setShowAddFolderForm] = useState(false);
+  const [showEditFolderForm, setShowEditFolderForm] = useState(false);;
   const [formKey, setFormKey] = useState(0);
   const [formFolderData, setFormFolderData] = useState<{id: string, name: string, color: string} | null>(null);
 
@@ -34,7 +36,7 @@ const FoldersScreen = observer(() => {
   };
 
   const handleEditFolder = (folder: any) => {
-    setShowAddFolderForm(false);
+    setShowEditFolderForm(false);
     setFormFolderData({
       id: folder.id,
       name: folder.name,
@@ -42,7 +44,7 @@ const FoldersScreen = observer(() => {
     });
     setTimeout(() => {
       setFormKey(prev => prev + 1);
-      setShowAddFolderForm(true);
+      setShowEditFolderForm(true);
     }, 0);
   };
 
@@ -98,6 +100,20 @@ const FoldersScreen = observer(() => {
         onClose={() => handleCloseForm()}
         onAddSuccess={handleAddFolderSuccess}
       />
+      )}
+
+      {formFolderData && (
+        <EditFolderForm
+          key={formKey}
+          folderId={formFolderData.id}
+          initialName={formFolderData.name}
+          initialColor={formFolderData.color}
+          isVisible={showEditFolderForm}
+          onClose={() => {
+            setShowEditFolderForm(false);
+            setFormFolderData(null);
+          }}
+        />
       )}
     </View>
   );
