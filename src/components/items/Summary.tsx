@@ -1,7 +1,7 @@
 // components/SummaryItem.tsx
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Summary } from '../types/models/summary';
+import { Summary } from '../../types/models/summary';
 
 interface SummaryItemProps {
   summary: Summary;

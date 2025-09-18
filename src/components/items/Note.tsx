@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Modal } from 'react-native';
-import { folderStore } from '../stores/foldersStore';
-import NoteItemMenu from './modals/context-menu/NoteItemMenu';
+import { folderStore } from '../../stores/foldersStore';
+import NoteItemMenu from '../modals/context-menu/NoteItemMenu';
 
 interface NoteItemProps {
   note: any;

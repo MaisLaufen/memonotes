@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Folder } from "../types/models/folder";
+import { Folder } from "../../types/models/folder";
 import React, { useState } from "react";
-import FolderItemMenu from "./modals/context-menu/FolderItemMenu";
+import FolderItemMenu from "../modals/context-menu/FolderItemMenu";
 
 interface FolderItemProps {
   folder: Folder;
