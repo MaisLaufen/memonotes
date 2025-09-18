@@ -7,7 +7,8 @@ import { AppStackParamList } from '../../navigation/appStack';
 import FolderItem from '../../components/Folder';
 import AddButton from '../../components/AddButton';
 import { folderStore } from '../../stores/foldersStore';
-import AddFolderForm from '../../components/forms/AddFolderForm';
+import AddFolderForm from '../../components/forms/folder/CreateFolderForm';
+import CreateFolderForm from '../../components/forms/folder/CreateFolderForm';
 
 type FoldersScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'Main'>;
 
@@ -91,15 +92,12 @@ const FoldersScreen = observer(() => {
       <AddButton onPress={handleShowAddForm} title='Добавить папку'/>
 
       {showAddFolderForm && (
-        <AddFolderForm
-          key={formKey}
-          isVisible={showAddFolderForm}
-          onClose={handleCloseForm}
-          onAddSuccess={handleAddFolderSuccess}
-          folderId={formFolderData?.id}
-          initialName={formFolderData?.name || ''}
-          initialColor={formFolderData?.color || ''}
-        />
+        <CreateFolderForm
+        parentId={null}
+        isVisible={showAddFolderForm && !formFolderData}
+        onClose={() => handleCloseForm()}
+        onAddSuccess={handleAddFolderSuccess}
+      />
       )}
     </View>
   );

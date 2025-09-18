@@ -8,58 +8,48 @@ import {
   ScrollView,
   Alert
 } from 'react-native';
-import { folderStore } from '../../stores/foldersStore';
+import { folderStore } from '../../../stores/foldersStore';
 
-interface AddFolderFormProps {
+interface EditFolderFormProps {
   isVisible: boolean;
   onClose: () => void;
-  onAddSuccess?: () => void;
-  parentId?: string | null; // Родительская папка
-  folderId?: string; // Для редактирования
-  initialName?: string; // Для редактирования
-  initialColor?: string; // Для редактирования
-  initialParentId?: string | null; // Для редактирования
+  onEditSuccess?: () => void;
+  folderId: string; // Обязательный ID редактируемой папки
+  initialName: string;
+  initialColor: string;
 }
 
-const AddFolderForm: React.FC<AddFolderFormProps> = ({ 
+const EditFolderForm: React.FC<EditFolderFormProps> = ({ 
   isVisible, 
   onClose,
-  onAddSuccess,
-  parentId = null,
+  onEditSuccess,
   folderId,
-  initialName = '',
-  initialColor,
-  initialParentId = null
+  initialName,
+  initialColor
 }) => {
   const [name, setName] = useState(initialName);
-  const [selectedColor, setSelectedColor] = useState(initialColor || folderStore.getFolderColors()[0]);
-  const isEditing = !!folderId;
+  const [selectedColor, setSelectedColor] = useState(initialColor);
 
   useEffect(() => {
     if (isVisible) {
       setName(initialName);
-      setSelectedColor(initialColor || folderStore.getFolderColors()[0]);
+      setSelectedColor(initialColor);
     }
   }, [isVisible, initialName, initialColor]);
 
-  const handleAddFolder = async () => {
+  const handleEditFolder = async () => {
     if (!name.trim()) {
       Alert.alert('Ошибка', 'Введите название папки');
       return;
     }
     
     try {
-      if (isEditing) {
-        await folderStore.renameFolder(folderId!, name.trim(), selectedColor, initialParentId);
-      } else {
-        await folderStore.addFolder(name.trim(), selectedColor, parentId);
-      }
-      setName('');
-      setSelectedColor(folderStore.getFolderColors()[0]);
-      onAddSuccess?.();
+      // При редактировании parentId не меняется
+      await folderStore.renameFolder(folderId, name.trim(), selectedColor);
+      onEditSuccess?.();
       onClose();
     } catch (error) {
-      Alert.alert('Ошибка', isEditing ? 'Не удалось обновить папку' : 'Не удалось создать папку');
+      Alert.alert('Ошибка', 'Не удалось обновить папку');
     }
   };
 
@@ -69,7 +59,7 @@ const AddFolderForm: React.FC<AddFolderFormProps> = ({
     <View style={styles.overlay}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>{isEditing ? 'Редактировать папку' : 'Новая папка'}</Text>
+          <Text style={styles.title}>Редактировать папку</Text>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>×</Text>
           </TouchableOpacity>
@@ -114,10 +104,10 @@ const AddFolderForm: React.FC<AddFolderFormProps> = ({
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.button, styles.addButton, !name.trim() && styles.addButtonDisabled]}
-            onPress={handleAddFolder}
+            onPress={handleEditFolder}
             disabled={!name.trim()}
           >
-            <Text style={styles.addButtonText}>{isEditing ? 'Сохранить' : 'Создать'}</Text>
+            <Text style={styles.addButtonText}>Сохранить</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -125,7 +115,6 @@ const AddFolderForm: React.FC<AddFolderFormProps> = ({
   );
 };
 
-// ... стили остаются те же
 const styles = StyleSheet.create({
   // ... (все стили из предыдущего примера)
   overlay: {
@@ -234,4 +223,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddFolderForm;
+export default EditFolderForm;
