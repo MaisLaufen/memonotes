@@ -3,6 +3,22 @@ import { Folder } from "../../types/models/folder";
 import React, { useState } from "react";
 import FolderItemMenu from "../modals/context-menu/FolderItemMenu";
 
+import tinycolor from "tinycolor2";
+import LinearGradient from "react-native-linear-gradient";
+
+
+// TODO: Вынести в отдельный компонент
+export const getGradientColors = (baseColor: string) => {
+  const color = tinycolor(baseColor);
+
+  // Если цвет тёмный → делаем чуть светлее, иначе чуть темнее
+  const gradientColor = color.isDark()
+    ? color.lighten(25).toHexString()
+    : color.darken(20).toHexString();
+
+  return [baseColor, gradientColor];
+};
+
 interface FolderItemProps {
   folder: Folder;
   onEditPress: () => void;
@@ -17,6 +33,8 @@ const FolderItem: React.FC<FolderItemProps> = ({
   onPress 
 }) => {
   const [showMenu, setShowMenu] = useState(false);
+
+  const gradientColors = getGradientColors(folder.color || "#ff0000");
 
   const handleMenuPress = (e: any) => {
     e.stopPropagation();
@@ -39,10 +57,13 @@ const FolderItem: React.FC<FolderItemProps> = ({
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
-        style={[styles.folderCard, { backgroundColor: folder.color || '#ff0000' }]}
-        onPress={onPress}
-      >
+      <TouchableOpacity style={styles.folderCard} onPress={onPress}>
+        <LinearGradient
+          colors={gradientColors}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[StyleSheet.absoluteFill, {borderRadius: 12}]}
+        />
         <Text style={styles.folderName}>{folder.name}</Text>
       </TouchableOpacity>
       
