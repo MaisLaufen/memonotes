@@ -45,9 +45,9 @@ const NotesScreen = observer(() => {
   };
 
   const getNoteColor = (note: any) => {
-    if (!note.folderId) return '#393939';
+    if (!note.folderId) return 'transparent';
     const folder = folderStore.folders.find((f: any) => f.id === note.folderId);
-    return folder?.color || '#393939';
+    return folder?.color || 'transparent';
   };
 
   const handleAddNoteSuccess = () => {
@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',
+    padding: 16,
   },
   emptyContainer: {
     flex: 1,
