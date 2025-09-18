@@ -9,6 +9,7 @@ import {
   Alert
 } from 'react-native';
 import { folderStore } from '../../../stores/foldersStore';
+import LinearGradient from 'react-native-linear-gradient';
 
 interface EditFolderFormProps {
   isVisible: boolean;
@@ -57,6 +58,13 @@ const EditFolderForm: React.FC<EditFolderFormProps> = ({
 
   return (
     <View style={styles.overlay}>
+        <View>
+               <LinearGradient
+                  colors={['transparent', '#8e44ff']}
+                  style={styles.glow}
+                  start={{ x: 0.5, y: 0 }}
+                  end={{ x: 0.5, y: 1 }}
+                />
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Редактировать папку</Text>
@@ -112,27 +120,29 @@ const EditFolderForm: React.FC<EditFolderFormProps> = ({
         </View>
       </View>
     </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  // ... (все стили из предыдущего примера)
   overlay: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'flex-end',
   },
   container: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 1)',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     paddingTop: 20,
     paddingBottom: 34,
-    maxHeight: '80%',
+    width: '100%',
+    borderTopWidth: 1,
+    borderColor: 'rgba(143, 68, 255)',
   },
   header: {
     flexDirection: 'row',
@@ -142,16 +152,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#f5f5f5',
   },
   closeButton: {
     padding: 8,
   },
   closeButtonText: {
-    fontSize: 24,
-    color: '#999',
+    fontSize: 28,
+    color: '#aaa',
     fontWeight: '300',
   },
   content: {
@@ -160,17 +170,18 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 12,
+    borderColor: 'rgba(142, 68, 255, 0.4)',
+    borderRadius: 14,
     padding: 16,
     fontSize: 16,
     marginBottom: 20,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    color: '#fff',
   },
   colorLabel: {
     fontSize: 16,
-    fontWeight: '500',
-    color: '#333',
+    fontWeight: '600',
+    color: '#ddd',
     marginBottom: 16,
   },
   colorPicker: {
@@ -188,8 +199,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   selectedColor: {
-    borderColor: '#333',
-    borderWidth: 2,
+    borderColor: '#8e44ff',
+    borderWidth: 3,
   },
   footer: {
     flexDirection: 'row',
@@ -199,27 +210,38 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     paddingVertical: 16,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: '#f1f3f4',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
   },
   cancelButtonText: {
     fontSize: 16,
-    color: '#5f6368',
+    color: '#bbb',
     fontWeight: '500',
   },
   addButton: {
-    backgroundColor: '#4ECDC4',
+    backgroundColor: '#8e44ff',
   },
   addButtonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#5e5e5e',
   },
   addButtonText: {
     fontSize: 16,
     color: 'white',
-    fontWeight: '500',
+    fontWeight: '600',
+  },
+  glow: {
+    position: 'absolute',
+    top: -90,    // чтобы "выходило" за пределы контейнера
+    left: 0,
+    right: 0,
+    height: 120,  // высота свечения
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
   },
 });
 

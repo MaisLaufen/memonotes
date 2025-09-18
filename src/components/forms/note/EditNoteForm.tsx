@@ -5,114 +5,110 @@ import {
   TouchableOpacity, 
   TextInput, 
   StyleSheet,
-  ScrollView,
   Alert
 } from 'react-native';
+import { notesStore } from '../../../stores/notesStore';
 import LinearGradient from 'react-native-linear-gradient';
-import { folderStore } from '../../../stores/foldersStore';
 
-interface CreateFolderFormProps {
+interface EditNoteFormProps {
   isVisible: boolean;
   onClose: () => void;
-  onAddSuccess?: () => void;
-  parentId: string | null; // Обязательный parentId для новой папки
+  onEditSuccess?: () => void;
+  noteId: string;
+  initialTitle: string;
+  initialDescription: string;
 }
 
-const CreateFolderForm: React.FC<CreateFolderFormProps> = ({ 
+const EditNoteForm: React.FC<EditNoteFormProps> = ({ 
   isVisible, 
   onClose,
-  onAddSuccess,
-  parentId
+  onEditSuccess,
+  noteId,
+  initialTitle,
+  initialDescription
 }) => {
-  const [name, setName] = useState('');
-  const [selectedColor, setSelectedColor] = useState(folderStore.getFolderColors()[0]);
+  const [title, setTitle] = useState(initialTitle);
+  const [description, setDescription] = useState(initialDescription);
 
-  const handleCreateFolder = async () => {
-    if (!name.trim()) {
-      Alert.alert('Ошибка', 'Введите название папки');
+  useEffect(() => {
+    if (isVisible) {
+      setTitle(initialTitle);
+      setDescription(initialDescription);
+    }
+  }, [isVisible, initialTitle, initialDescription]);
+
+  const handleEditNote = async () => {
+    if (!title.trim()) {
+      Alert.alert('Ошибка', 'Введите название заметки');
       return;
     }
     
     try {
-      await folderStore.addFolder(name.trim(), selectedColor, parentId);
-      setName('');
-      setSelectedColor(folderStore.getFolderColors()[0]);
-      onAddSuccess?.();
+      await notesStore.updateNote(noteId, { title: title.trim(), description });
+      onEditSuccess?.();
       onClose();
     } catch (error) {
-      Alert.alert('Ошибка', 'Не удалось создать папку');
+      Alert.alert('Ошибка', 'Не удалось обновить заметку');
     }
   };
 
   if (!isVisible) return null;
 
   return (
-    
     <View style={styles.overlay}>
       <View>
-       <LinearGradient
+        <LinearGradient
           colors={['transparent', '#8e44ff']}
           style={styles.glow}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
         />
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Новая папка</Text>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>×</Text>
-          </TouchableOpacity>
-        </View>
-        
-        <View style={styles.content}>
-          <TextInput
-            style={styles.input}
-            placeholder="Введите название папки..."
-            value={name}
-            placeholderTextColor={'#565656ff'}
-            onChangeText={setName}
-            autoFocus
-          />
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Редактировать заметку</Text>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>×</Text>
+            </TouchableOpacity>
+          </View>
           
-          <Text style={styles.colorLabel}>Цвет папки</Text>
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false} 
-            style={styles.colorPicker}
-            contentContainerStyle={styles.colorPickerContent}
-          >
-            {folderStore.getFolderColors().map((color) => (
-              <TouchableOpacity
-                key={color}
-                style={[
-                  styles.colorOption,
-                  { backgroundColor: color },
-                  selectedColor === color && styles.selectedColor
-                ]}
-                onPress={() => setSelectedColor(color)}
-              />
-            ))}
-          </ScrollView>
-        </View>
-        
-        <View style={styles.footer}>
-          <TouchableOpacity 
-            style={[styles.button, styles.cancelButton]}
-            onPress={onClose}
-          >
-            <Text style={styles.cancelButtonText}>Отмена</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.button, styles.addButton, !name.trim() && styles.addButtonDisabled]}
-            onPress={handleCreateFolder}
-            disabled={!name.trim()}
-          >
-            <Text style={styles.addButtonText}>Создать</Text>
-          </TouchableOpacity>
+          <View style={styles.content}>
+            <TextInput
+              style={styles.input}
+              placeholder="Введите название заметки..."
+              placeholderTextColor={'#656565ff'}
+              value={title}
+              onChangeText={setTitle}
+              autoFocus
+            />
+            <TextInput
+              style={[styles.input, styles.textarea]}
+              placeholder="Описание (необязательно)..."
+              placeholderTextColor={'#656565ff'}
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              numberOfLines={3}
+            />
+          </View>
+          
+          <View style={styles.footer}>
+            <TouchableOpacity 
+              style={[styles.button, styles.cancelButton]}
+              onPress={onClose}
+            >
+              <Text style={styles.cancelButtonText}>Отмена</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.button, styles.addButton, !title.trim() && styles.addButtonDisabled]}
+              onPress={handleEditNote}
+              disabled={!title.trim()}
+            >
+              <Text style={styles.addButtonText}>Сохранить</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-     </View>
-     </View>
+    </View>
   );
 };
 
@@ -199,6 +195,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     gap: 12,
   },
+  textarea: {
+    height: 100,
+    textAlignVertical: 'top',
+  },
   button: {
     flex: 1,
     paddingVertical: 16,
@@ -237,4 +237,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateFolderForm;
+export default EditNoteForm;
