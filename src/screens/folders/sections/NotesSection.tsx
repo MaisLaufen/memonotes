@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Alert, StyleSheet } from 'react-native';
-import NoteItem from '../../../components/Note';
+import NoteItem from '../../../components/items/Note';
 import { notesStore } from '../../../stores/notesStore';
 import { Note } from '../../../types/models/note';
 

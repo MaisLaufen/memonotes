@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, StatusBar, SafeAreaView } from "react-native";
 import { observer } from "mobx-react-lite";
 import NotesListScreen from '../notes/NotesScreen'
 import FoldersScreen from "../folders/FoldersScreen";
@@ -7,6 +7,7 @@ import MainAppBar from "../../components/MainAppBar";
 import MainSearchBar from "../../components/MainSearchBar";
 import MainTabBar from "../../components/MainTabBar";
 import SummariesScreen from "../summaries/SummariesScreen";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const MainScreen = observer(() => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,10 +17,10 @@ const MainScreen = observer(() => {
     {key: 'folders', label: 'Папки'},
     {key: 'summaries', label: 'Коспекты'}
   ]
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.container}>
-    <View style={{height: 15}}/>
+    <View style={{...styles.container, paddingTop: insets.top}}>
     <MainAppBar/>
     <MainSearchBar
         value={searchQuery}
@@ -50,7 +51,10 @@ const MainScreen = observer(() => {
 });
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#000000ff" },
+  container: { 
+    flex: 1, 
+    backgroundColor: "#000000ff" ,
+  },
   header: { fontSize: 20, fontWeight: "bold", marginBottom: 10 },
   input: {
     borderWidth: 1,

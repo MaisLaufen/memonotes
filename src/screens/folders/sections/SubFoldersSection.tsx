@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import FolderItem from '../../../components/Folder';
+import FolderItem from '../../../components/items/Folder';
 
 interface SubFoldersSectionProps {
   subFolders: any[];

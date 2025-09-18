@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/appStack';
-import FolderItem from '../../components/Folder';
+import FolderItem from '../../components/items/Folder';
 import AddButton from '../../components/AddButton';
 import { folderStore } from '../../stores/foldersStore';
 import CreateFolderForm from '../../components/forms/folder/CreateFolderForm';

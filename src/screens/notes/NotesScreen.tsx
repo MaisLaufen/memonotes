@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, FlatList, StyleSheet, Text, Alert } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import NoteItem from '../../components/Note';
+import NoteItem from '../../components/items/Note';
 import { notesStore } from '../../stores/notesStore';
 import AddButton from '../../components/AddButton';
 import { folderStore } from '../../stores/foldersStore';

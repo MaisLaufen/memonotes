@@ -7,7 +7,7 @@ import { AppStackParamList } from '../../navigation/appStack';
 import { Summary } from '../../types/models/summary';
 import { summariesStore } from '../../stores/summariesStore';
 import AddButton from '../../components/AddButton';
-import SummaryItem from '../../components/Summary';
+import SummaryItem from '../../components/items/Summary';
 
 type SummariesScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'Main'>;
 
