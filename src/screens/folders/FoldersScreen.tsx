@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, StyleSheet, Alert, ScrollView, Dimensions, FlatList } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -11,6 +11,10 @@ import CreateFolderForm from '../../components/forms/folder/CreateFolderForm';
 import EditFolderForm from '../../components/forms/folder/EditFolderForm';
 
 type FoldersScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'Main'>;
+
+const GAP = 16;
+const {width: screenWidth } = Dimensions.get("window");
+const ITEM_WIDTH = (screenWidth - GAP * 3) / 2;
 
 const FoldersScreen = observer(() => {
   const navigation = useNavigation<FoldersScreenNavigationProp>();
@@ -65,40 +69,45 @@ const FoldersScreen = observer(() => {
     setFormFolderData(null);
   };
 
-  const renderFolderItem = ({ item }: { item: any }) => (
-    <FolderItem
-      folder={item}
-      onEditPress={() => handleEditFolder(item)}
-      onDeletePress={() => handleDeleteFolder(item.id, item.title)}
-      onPress={() => {
-        navigation.navigate('FolderDetail', {
-          folderId: item.id,
-          folderName: item.name,
-          folderColor: item.color || '#ff0000',
-          parentFolderId: null
-        });
-      } }/>
+const renderFolderItem = ({ item }: { item: any }) => (
+    <View style={styles.folderItemWrapper}>
+      <FolderItem
+        folder={item}
+        onEditPress={() => handleEditFolder(item)}
+        onDeletePress={() => handleDeleteFolder(item.id, item.name)}
+        onPress={() =>
+          navigation.navigate("FolderDetail", {
+            folderId: item.id,
+            folderName: item.name,
+            folderColor: item.color || "#ff0000",
+            parentFolderId: null,
+          })
+        }
+      />
+    </View>
   );
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.foldersContainer}>
-        {folderStore.parentFolders.map((folder) => (
-          <View key={folder.id} style={styles.folderItemWrapper}>
-            {renderFolderItem({ item: folder })}
-          </View>
-        ))}
-      </ScrollView>
-      
-      <AddButton onPress={handleShowAddForm} title='Добавить папку'/>
+      <FlatList
+        data={folderStore.parentFolders.slice()} // slice() чтобы MobX массив стал plain
+        keyExtractor={(item) => item.id}
+        renderItem={renderFolderItem}
+        numColumns={2}
+        contentContainerStyle={styles.listContainer}
+        columnWrapperStyle={{ justifyContent: "space-between" }}
+        showsVerticalScrollIndicator={false}
+      />
+
+      <AddButton onPress={handleShowAddForm} title="Добавить папку" />
 
       {showAddFolderForm && (
         <CreateFolderForm
-        parentId={null}
-        isVisible={showAddFolderForm && !formFolderData}
-        onClose={() => handleCloseForm()}
-        onAddSuccess={handleAddFolderSuccess}
-      />
+          parentId={null}
+          isVisible={showAddFolderForm && !formFolderData}
+          onClose={handleCloseForm}
+          onAddSuccess={handleAddFolderSuccess}
+        />
       )}
 
       {formFolderData && (
@@ -121,16 +130,15 @@ const FoldersScreen = observer(() => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'transparent',
-    padding: 16,
+    backgroundColor: "transparent",
+    padding: GAP,
   },
-  foldersContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+  listContainer: {
+    paddingBottom: 80,
   },
   folderItemWrapper: {
-    width: 175,
+    width: ITEM_WIDTH,
+    marginBottom: GAP,
   },
 });
 

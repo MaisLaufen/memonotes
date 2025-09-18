@@ -68,20 +68,12 @@ const FolderItem: React.FC<FolderItemProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    width: 175,
-    marginBottom: 16,
   },
   folderCard: {
     aspectRatio: 1,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    padding: 16,
   },
   folderName: {
     fontSize: 16,
