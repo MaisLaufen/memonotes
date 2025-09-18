@@ -1,7 +1,6 @@
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Folder } from "../types/models/folder";
 import React, { useState } from "react";
-import { notesStore } from "../stores/notesStore";
 import FolderItemMenu from "./modals/context-menu/FolderItemMenu";
 
 interface FolderItemProps {
@@ -38,8 +37,6 @@ const FolderItem: React.FC<FolderItemProps> = ({
     onDeletePress();
   };
 
-  const noteCount = notesStore.getNotesByFolder(folder.id).length;
-
   return (
     <View style={styles.container}>
       <TouchableOpacity 
@@ -47,9 +44,6 @@ const FolderItem: React.FC<FolderItemProps> = ({
         onPress={onPress}
       >
         <Text style={styles.folderName}>{folder.name}</Text>
-        <Text style={styles.noteCount}>
-          {noteCount} заметок
-        </Text>
       </TouchableOpacity>
       
       {/* Кнопка меню */}
@@ -95,11 +89,6 @@ const styles = StyleSheet.create({
     color: '#ffffffff',
     textAlign: 'center',
     marginBottom: 4,
-  },
-  noteCount: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.8)',
-    textAlign: 'center',
   },
   menuButton: {
     position: 'absolute',

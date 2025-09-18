@@ -7,7 +7,6 @@ import { AppStackParamList } from '../../navigation/appStack';
 import FolderItem from '../../components/Folder';
 import AddButton from '../../components/AddButton';
 import { folderStore } from '../../stores/foldersStore';
-import AddFolderForm from '../../components/forms/folder/CreateFolderForm';
 import CreateFolderForm from '../../components/forms/folder/CreateFolderForm';
 import EditFolderForm from '../../components/forms/folder/EditFolderForm';
 
