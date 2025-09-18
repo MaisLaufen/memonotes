@@ -6,7 +6,7 @@ import { Note } from '../../../types/models/note';
 
 interface NotesSectionProps {
   notes: any[];
-  onEditNote: (noteId: string) => void;
+  onEditNote: (note: Note) => void;
   onDeleteNote: (noteId: string) => void;
 }
 
@@ -41,7 +41,7 @@ export const NotesSection: React.FC<NotesSectionProps> = ({
             <NoteItem 
               note={note} 
               color='red'
-              onEdit={() => onEditNote(note.id)} 
+              onEdit={() => onEditNote(note)} 
               onDelete={() => handleDeleteNote(note.id)} 
             />
           </View>

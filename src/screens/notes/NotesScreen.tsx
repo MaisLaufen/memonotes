@@ -5,26 +5,27 @@ import NoteItem from '../../components/Note';
 import { notesStore } from '../../stores/notesStore';
 import AddButton from '../../components/AddButton';
 import { folderStore } from '../../stores/foldersStore';
-import AddNoteForm from '../../components/forms/AddNoteForm';
+import CreateNoteForm from '../../components/forms/note/CreateNoteForm';
+import EditNoteForm from '../../components/forms/note/EditNoteForm';
 
 const NotesScreen = observer(() => {
-  const [showAddNoteForm, setShowAddNoteForm] = useState(false);
+  const [showCreateNoteForm, setShowCreateNoteForm] = useState(false);
+  const [showEditNoteForm, setShowEditNoteForm] = useState(false);
   const [formKey, setFormKey] = useState(0); // Ключ для принудительного пересоздания формы
   const [formNoteData, setFormNoteData] = useState<{id: string, title: string, description: string} | null>(null);
+  
+  const notes = notesStore.userNotes;
 
   const navigateToEdit = (noteId: string) => {
     const note = notesStore.notes.find(n => n.id === noteId);
     if (note) {
-      setShowAddNoteForm(false);
       setFormNoteData({
         id: note.id,
         title: note.title,
-        description: note.description
+        description: note.description || ''
       });
-      setTimeout(() => {
-        setFormKey(prev => prev + 1);
-        setShowAddNoteForm(true);
-      }, 0);
+      setFormKey(prev => prev + 1);
+      setShowEditNoteForm(true);
     }
   };
 
@@ -49,26 +50,17 @@ const NotesScreen = observer(() => {
     return folder?.color || '#393939';
   };
 
-  const notes = notesStore.userNotes;
-
   const handleAddNoteSuccess = () => {
-    setFormNoteData(null);
+    // Можно добавить дополнительную логику при успешном создании
   };
 
   const handleShowAddForm = () => {
-    // Скрываем форму
-    setShowAddNoteForm(false);
-    // Сбрасываем данные
-    setFormNoteData(null);
-    // Принудительно пересоздаем форму с новым ключом
-    setTimeout(() => {
-      setFormKey(prev => prev + 1);
-      setShowAddNoteForm(true);
-    }, 0);
+    setShowCreateNoteForm(true);
   };
 
   const handleCloseForm = () => {
-    setShowAddNoteForm(false);
+    setShowCreateNoteForm(false);
+    setShowEditNoteForm(false);
     setFormNoteData(null);
   };
 
@@ -101,16 +93,23 @@ const NotesScreen = observer(() => {
         title='Добавить записку'
       />
 
-      {/* Модальная форма для добавления/редактирования заметки */}
-      {showAddNoteForm && (
-        <AddNoteForm
-          key={formKey} // Уникальный ключ для принудительного пересоздания
-          isVisible={showAddNoteForm}
+      {/* Форма создания новой заметки */}
+      <CreateNoteForm
+        isVisible={showCreateNoteForm}
+        onClose={handleCloseForm}
+        onAddSuccess={handleAddNoteSuccess}
+      />
+
+      {/* Форма редактирования заметки */}
+      {formNoteData && (
+        <EditNoteForm
+          key={formKey}
+          noteId={formNoteData.id}
+          initialTitle={formNoteData.title}
+          initialDescription={formNoteData.description || ''}
+          isVisible={showEditNoteForm}
           onClose={handleCloseForm}
-          onAddSuccess={handleAddNoteSuccess}
-          noteId={formNoteData?.id}
-          initialTitle={formNoteData?.title || ''}
-          initialDescription={formNoteData?.description || ''}
+          onEditSuccess={handleAddNoteSuccess}
         />
       )}
     </View>

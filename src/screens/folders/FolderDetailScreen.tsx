@@ -7,7 +7,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/appStack';
 import { summariesStore } from '../../stores/summariesStore';
 import { folderStore } from '../../stores/foldersStore';
-import AddNoteForm from '../../components/forms/AddNoteForm';
+import AddNoteForm from '../../components/forms/note/CreateNoteForm';
 import AddFolderForm from '../../components/forms/folder/CreateFolderForm';
 import { EmptyState } from './sections/EmptyState';
 import { NotesSection } from './sections/NotesSection';
@@ -18,6 +18,8 @@ import { FolderHeader } from './components/FolderHeader';
 import { v4 as uuid } from 'uuid';
 import CreateFolderForm from '../../components/forms/folder/CreateFolderForm';
 import EditFolderForm from '../../components/forms/folder/EditFolderForm';
+import CreateNoteForm from '../../components/forms/note/CreateNoteForm';
+import EditNoteForm from '../../components/forms/note/EditNoteForm';
 
 type FolderDetailScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, 'FolderDetail'>;
 
@@ -35,13 +37,16 @@ const FolderDetailScreen = observer(() => {
   const folderNotes = notesStore.getNotesByFolder(folderId);
   const folderSummaries = summariesStore.getSummariesByFolder(folderId);
 
-  // Состояния форм
-  const [showAddNoteForm, setShowAddNoteForm] = useState(false);
+  const [showCreateNoteForm, setShowCreateNoteForm] = useState(false);
+  const [showEditNoteForm, setShowEditNoteForm] = useState(false);
   
   const [showEditFolderForm, setShowEditFolderForm] = useState(false);
-  const [showAddFolderForm, setShowAddFolderForm] = useState(false);
-  const [formKey, setFormKey] = useState(0);
+  const [showCreateFolderForm, setShowCreateFolderForm] = useState(false);
+  
   const [formFolderData, setFormFolderData] = useState<{id: string, name: string, color: string} | null>(null);
+  const [editNoteData, setEditNoteData] = useState<{id: string, title: string, description: string} | null>(null);
+
+  const [formKey, setFormKey] = useState(0);
 
   // Навигация назад с учетом иерархии
   const handleGoBack = () => {
@@ -86,7 +91,7 @@ const FolderDetailScreen = observer(() => {
   // Создание новой папки
   const handleAddFolder = () => {
     setFormFolderData(null);
-    setShowAddFolderForm(true);
+    setShowCreateFolderForm(true);
   }
 
   // Удаление папки
@@ -105,6 +110,16 @@ const FolderDetailScreen = observer(() => {
     );
   };
 
+  const handleEditNote = (note: any) => {
+    setEditNoteData({
+      id: note.id,
+      title: note.title,
+      description: note.description || ''
+    });
+    setFormKey(prev => prev + 1);
+    setShowEditNoteForm(true);
+  };
+
   useEffect(() => {
     // Этот эффект сработает при изменении subFolders
     // Можно добавить дополнительную логику если нужно
@@ -121,8 +136,8 @@ const FolderDetailScreen = observer(() => {
       />
 
       <FolderActionButtons
-        onAddNotePress={() => setShowAddNoteForm(true)}
-        onAddFolderPress={() => setShowAddFolderForm(true)}
+        onAddNotePress={() => setShowCreateNoteForm(true)}
+        onAddFolderPress={() => setShowCreateFolderForm(true)}
         onAddSummaryPress={() => {
           navigation.navigate('EditSummary', {
             summaryId: undefined,
@@ -155,9 +170,7 @@ const FolderDetailScreen = observer(() => {
 
         <NotesSection
           notes={folderNotes}
-          onEditNote={(noteId) => {
-            navigation.navigate('EditNote', { noteId });
-          }}
+          onEditNote={handleEditNote}
           onDeleteNote={(noteId) => {
             // Alert logic moved to component
           }}
@@ -169,17 +182,32 @@ const FolderDetailScreen = observer(() => {
       </ScrollView>
 
       {/* Модальные формы */}
-      <AddNoteForm
+      <CreateNoteForm
         folderId={folderId}
-        isVisible={showAddNoteForm}
-        onClose={() => setShowAddNoteForm(false)}
+        isVisible={showCreateNoteForm}
+        onClose={() => setShowCreateNoteForm(false)}
       />
+
+      {editNoteData && (
+        <EditNoteForm
+          key={formKey}
+          noteId={editNoteData.id}
+          initialTitle={editNoteData.title}
+          initialDescription={editNoteData.description || ''}
+          isVisible={showEditNoteForm}
+          onClose={() => {
+            setShowEditNoteForm(false);
+            setEditNoteData(null);
+          }}
+        />
+      )}
 
       <CreateFolderForm
         parentId={folderId}
-        isVisible={showAddFolderForm && !formFolderData}
-        onClose={() => setShowAddFolderForm(false)}
+        isVisible={showCreateFolderForm && !formFolderData}
+        onClose={() => setShowCreateFolderForm(false)}
       />
+
       {formFolderData && (
         <EditFolderForm
           key={formKey}
