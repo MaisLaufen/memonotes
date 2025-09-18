@@ -50,7 +50,7 @@ const MainScreen = observer(() => {
 });
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 5, backgroundColor: "#0f0f0f" },
+  container: { flex: 1, backgroundColor: "#000000ff" },
   header: { fontSize: 20, fontWeight: "bold", marginBottom: 10 },
   input: {
     borderWidth: 1,
